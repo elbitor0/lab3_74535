@@ -1,4 +1,4 @@
-package com.stu74535.lab3_74535
+package com.stu74535.lab3_74535.Model
 
 data class Rating(
     val count: Int,

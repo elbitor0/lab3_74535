@@ -1,24 +1,15 @@
-package com.stu74535.lab3_74535
+package com.stu74535.lab3_74535.View
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyGridScope
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -31,17 +22,23 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.stu74535.lab3_74535.Add
+import com.stu74535.lab3_74535.AddToCart
+import com.stu74535.lab3_74535.Model.OrderProduct
+import com.stu74535.lab3_74535.Model.ProductItem
+import com.stu74535.lab3_74535.Remove
+import kotlinx.coroutines.selects.select
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProductScreen(modifier: Modifier, navController: NavController, product:ProductItem, currentCart : MutableList<OrderProduct>)
+fun ProductScreen(modifier: Modifier, navController: NavController,productid:Int ,products: List<ProductItem>, currentCart : MutableList<OrderProduct>)
 {
+    val product = products.find { it.id == productid }
+    requireNotNull(product) { "Product with id $productid not found" }
     Scaffold(
         topBar = {
             TopAppBar(

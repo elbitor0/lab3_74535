@@ -1,5 +1,7 @@
 package com.stu74535.lab3_74535
 
+import com.stu74535.lab3_74535.Model.CartItem
+import com.stu74535.lab3_74535.Model.ProductItem
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET

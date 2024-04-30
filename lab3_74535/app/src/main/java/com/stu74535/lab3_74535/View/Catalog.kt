@@ -1,4 +1,4 @@
-package com.stu74535.lab3_74535
+package com.stu74535.lab3_74535.View
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -10,14 +10,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -32,10 +31,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.stu74535.lab3_74535.Model.ProductItem
+import com.stu74535.lab3_74535.R
+import com.stu74535.lab3_74535.Routes
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Catalog(modifier: Modifier, navController: NavController, categories:Array<String>, products:Array<ProductItem>)
+fun Catalog(modifier: Modifier, navController: NavController, categories:List<String>, products:List<ProductItem>)
 {
     Scaffold(
         topBar = {
@@ -54,12 +56,7 @@ fun Catalog(modifier: Modifier, navController: NavController, categories:Array<S
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 contentColor = MaterialTheme.colorScheme.primary,
             ) {
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    textAlign = TextAlign.Center,
-                    text = "Screen 1 bottom app bar",
-                )
+
             }
         },
 
@@ -81,13 +78,10 @@ fun Catalog(modifier: Modifier, navController: NavController, categories:Array<S
             }
             LazyVerticalGrid(columns = GridCells.Fixed(2)) {
                 items(products) { product ->
-                    ProductItem(product = product)
+                    ProductItem(product = product,navController = navController)
                 }
 
             }
-
-
-
         }
     }
 
@@ -95,31 +89,32 @@ fun Catalog(modifier: Modifier, navController: NavController, categories:Array<S
 }
 
 @Composable
-fun ProductItem(product: ProductItem) {
-    Column(
-        modifier = Modifier
-            .padding(8.dp)
-            .width(200.dp)
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.padlock), // Replace R.drawable.placeholder with your actual drawable resource or URL
-            contentDescription ="Product Picture", // Add a description for accessibility
+fun ProductItem(product: ProductItem, navController: NavController) {
+    Button(onClick = { navController.navigate(Routes.ProductScreen.route + "/${product.id}") }) {
+        Column(
             modifier = Modifier
-                .height(120.dp)
-                .fillMaxWidth(),
-            contentScale = ContentScale.Crop
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Row {
-            Text(
-                text = product.title,
-                style = MaterialTheme.typography.labelMedium
+                .padding(8.dp)
+                .width(100.dp),
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.padlock), // Replace R.drawable.placeholder with your actual drawable resource or URL
+                contentDescription ="Product Picture", // Add a description for accessibility
+                modifier = Modifier
+                    .height(120.dp)
+                    .fillMaxWidth(),
+                contentScale = ContentScale.Crop
             )
-            Text(
-                text = "$${product.price}",
-                style = MaterialTheme.typography.bodyMedium
-            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Row {
+                Text(
+                    text = product.title,
+                    style = MaterialTheme.typography.labelMedium
+                )
+                Text(
+                    text = "$${product.price}",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
         }
-
     }
 }

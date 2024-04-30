@@ -1,6 +1,7 @@
-package com.stu74535.lab3_74535
+package com.stu74535.lab3_74535.Model
 
 class User (
+    var id : String,
     var username: String,
     var password: String,
     var firstName: String,
@@ -9,7 +10,6 @@ class User (
     var street: String,
     var city: String,
     var zipcode: String,
-    var geolocation: String,
     var lat: Double,
     var long: Double,
     var phone: String

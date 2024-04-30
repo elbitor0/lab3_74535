@@ -1,9 +1,7 @@
-package com.stu74535.lab3_74535
+package com.stu74535.lab3_74535.View
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -15,27 +13,29 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-
+import com.stu74535.lab3_74535.Model.OrderProduct
+import com.stu74535.lab3_74535.Model.ProductItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OrderHistory(modifier: Modifier, navController: NavController, products:List<ProductItem>) {
+fun Basket(modifier: Modifier, navController: NavController, currentCart : MutableList<OrderProduct>, products: List<ProductItem>)
+{
     Scaffold(
         topBar = {
             TopAppBar(
-                colors = topAppBarColors(
+                colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.primary,
                 ),
                 title = {
-                    Text("History")
+                    Text("Basket")
                 }
             )
         },
@@ -45,7 +45,7 @@ fun OrderHistory(modifier: Modifier, navController: NavController, products:List
                 contentColor = MaterialTheme.colorScheme.primary,
             ) {
                 Text(
-                    modifier = Modifier
+                    modifier = androidx.compose.ui.Modifier
                         .fillMaxWidth(),
                     textAlign = TextAlign.Center,
                     text = "Screen 1 bottom app bar",
@@ -53,47 +53,36 @@ fun OrderHistory(modifier: Modifier, navController: NavController, products:List
             }
         },
 
-        ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
 
-        }
-    }
-}
-
-@Composable
-fun CartSection(modifier: Modifier, cart: CartItem, productItems: List<ProductItem>) {
-    var totalPrice:Int =0
-    LazyColumn {
-        item { Text(text = cart.date) }
-        item {
-            for (product in cart.products) {
-                val matchedProduct = productItems.find { it.id == product.productId }
+            innerPadding ->
+        LazyColumn(modifier = modifier.padding(innerPadding)) {
+            items(currentCart) { product ->
+                val matchedProduct = products.find { it.id == product.productId }
                 if (matchedProduct != null) {
-                    totalPrice += product.quantity * product.quantity
-                    Card(modifier = modifier, amount = product.quantity, product = matchedProduct)
+                    ProductCard(modifier = Modifier,product = matchedProduct ,orderProduct = product)
                 } else {
                     // Handle when product is not found
                 }
             }
         }
+
+
     }
 }
-@Composable
-fun Card(modifier: Modifier,amount :Int, product:ProductItem)
-{
-    Row(modifier) {
-        product.Image(modifier = Modifier)
-        Column {
-            Text(text = product.title)
-            Text(text = "Amount : ${amount}")
-            Text(text = "Price : ${product.price*amount}")
-        }
-    }
 
+@Composable
+fun ProductCard(modifier:Modifier, product: ProductItem, orderProduct: OrderProduct) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        product.Image(Modifier.size(50.dp))
+
+        // Title
+        Column(modifier) {
+            Text(text = product.title)
+            Text(text = "Amount: ${orderProduct.quantity}")
+            Text(text = "Price: ${orderProduct.quantity*product.price}")
+        }
+
+
+    }
 }

@@ -1,57 +1,108 @@
 package com.stu74535.lab3_74535
 
+import android.content.ContentValues.TAG
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.firestore
+import com.stu74535.lab3_74535.Model.CartItem
+import com.stu74535.lab3_74535.Model.OrderProduct
+import com.stu74535.lab3_74535.Model.ProductItem
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.Calendar
-import java.util.UUID
+import kotlin.random.Random
 
 @Composable
-fun LoginButton(modifier: Modifier,username: MutableState<String>,password:MutableState<String>)
+fun LoginButton(modifier: Modifier,username: MutableState<String>,password:MutableState<String>, isEnabled:Boolean = true, navController: NavController)
 {
     Button(
-        onClick = { },
+        onClick = {
+            try {
+                val auth = FirebaseAuth.getInstance()
+                auth.signInWithEmailAndPassword(username.value, password.value)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            navController.navigate(Routes.Catalog.route)
+                        } else {
+                            // Authentication failed
+                        }
+                    }
+            } catch (e: Exception) {
+                // Handle any exceptions that occur during authentication
+            }
+
+        },
         modifier = modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(16.dp),
+        enabled = isEnabled
     ) {
         Text(text = "Login")
     }
 }
-
 @Composable
-fun SignupButton(modifier: Modifier, username: MutableState<String>, password: MutableState<String>)
-{
+fun SignupButton(
+    modifier: Modifier,
+    username: MutableState<String>,
+    password: MutableState<String>,
+    firstname: MutableState<String>,
+    lastname: MutableState<String>,
+    number: MutableState<String>,
+    street: MutableState<String>,
+    city: MutableState<String>,
+    zipcode: MutableState<String>,
+    phone: MutableState<String>,
+    isEnabled: Boolean = false,
+    navController: NavController
+){
     Button(
-        onClick = { },
+        onClick = {
+            val auth = FirebaseAuth.getInstance()
+            auth.createUserWithEmailAndPassword(username.value,password.value)
+            val db = Firebase.firestore
+            val user = hashMapOf(
+                "city" to city.value,
+                "phone" to phone.value,
+                "firstName" to firstname.value,
+                "id" to (auth.currentUser?.getUid() ?: 0),
+                "lastName" to lastname.value,
+                "lat" to Random.nextInt(),
+                "long" to Random.nextInt(),
+                "number" to number.value,
+                "steet" to street.value,
+                "zipcode" to zipcode.value
+            )
+            db.collection("utilisateurs").document(Random.nextInt(100000).toString()).set(user).addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully written!") }
+                .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
+            navController.navigate(Routes.Login.route)
+        },
         modifier = modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(16.dp),
+        enabled = isEnabled
     ) {
         Text(text = "SignUp")
     }
 }
 
 @Composable
-fun Order(product: ProductItem,amount:Int)
+fun Order(product: ProductItem, amount:Int)
 {
 
 }

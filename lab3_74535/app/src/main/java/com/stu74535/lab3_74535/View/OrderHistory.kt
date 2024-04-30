@@ -1,53 +1,40 @@
-package com.stu74535.lab3_74535
+package com.stu74535.lab3_74535.View
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyGridScope
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.stu74535.lab3_74535.Model.CartItem
+import com.stu74535.lab3_74535.Model.ProductItem
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Basket(modifier: Modifier,navController: NavController ,currentCart : MutableList<OrderProduct>, products: List<ProductItem>)
-{
+fun OrderHistory(modifier: Modifier, navController: NavController, products:List<ProductItem>, carts:List<CartItem>) {
     Scaffold(
         topBar = {
             TopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
+                colors = topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.primary,
                 ),
                 title = {
-                    Text("Basket")
+                    Text("History")
                 }
             )
         },
@@ -57,7 +44,7 @@ fun Basket(modifier: Modifier,navController: NavController ,currentCart : Mutabl
                 contentColor = MaterialTheme.colorScheme.primary,
             ) {
                 Text(
-                    modifier = androidx.compose.ui.Modifier
+                    modifier = Modifier
                         .fillMaxWidth(),
                     textAlign = TextAlign.Center,
                     text = "Screen 1 bottom app bar",
@@ -65,36 +52,51 @@ fun Basket(modifier: Modifier,navController: NavController ,currentCart : Mutabl
             }
         },
 
+        ) { innerPadding ->
+        LazyColumn(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            for (cart in carts)
+            {
+                item { CartSection(modifier = modifier, cart = cart, productItems = products) }
 
-            innerPadding ->
-        LazyColumn(modifier = modifier.padding(innerPadding)) {
-            items(currentCart) { product ->
-                val matchedProduct = products.find { it.id == product.productId }
+            }
+        }
+    }
+}
+
+@Composable
+fun CartSection(modifier: Modifier, cart: CartItem, productItems: List<ProductItem>) {
+    var totalPrice:Int =0
+    LazyColumn {
+        item { Text(text = cart.date) }
+        item {
+            for (product in cart.products) {
+                val matchedProduct = productItems.find { it.id == product.productId }
                 if (matchedProduct != null) {
-                    ProductCard(modifier = Modifier,product = matchedProduct ,orderProduct = product)
+                    totalPrice += product.quantity * product.quantity
+                    Card(modifier = modifier, amount = product.quantity, product = matchedProduct)
                 } else {
                     // Handle when product is not found
                 }
             }
         }
-
-
     }
 }
-
 @Composable
-fun ProductCard(modifier:Modifier, product:ProductItem, orderProduct: OrderProduct) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        product.Image(Modifier.size(50.dp))
-
-        // Title
-        Column(modifier) {
+fun Card(modifier: Modifier,amount :Int, product: ProductItem)
+{
+    Row(modifier) {
+        product.Image(modifier = Modifier)
+        Column {
             Text(text = product.title)
-            Text(text = "Amount: ${orderProduct.quantity}")
-            Text(text = "Price: ${orderProduct.quantity*product.price}")
+            Text(text = "Amount : ${amount}")
+            Text(text = "Price : ${product.price*amount}")
         }
-
-
     }
+
 }

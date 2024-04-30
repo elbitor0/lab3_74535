@@ -1,18 +1,21 @@
 package com.stu74535.lab3_74535
 
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
+import com.stu74535.lab3_74535.Model.CartItem
+import com.stu74535.lab3_74535.Model.OrderProduct
+import com.stu74535.lab3_74535.Model.ProductItem
 import com.stu74535.lab3_74535.ui.theme.Lab3_74535Theme
 import retrofit2.Call
 import retrofit2.Callback
@@ -22,14 +25,15 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 const val BASE_URL = "https://fakestoreapi.com/"
 class MainActivity : ComponentActivity() {
-    var products:List<ProductItem> = listOf()
+    var products : MutableList<ProductItem> = mutableListOf()
     var carts:List<CartItem> = listOf()
     var categories:List<String> = listOf()
     var currentCart : MutableList<OrderProduct> = mutableListOf()
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        var auth: FirebaseAuth = Firebase.auth
-
+        getProduct()
+        getCategories()
         setContent {
             Lab3_74535Theme {
                 // A surface container using the 'background' color from the theme
@@ -37,12 +41,10 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-
+                    AppNavigation(products =products, currentCart = currentCart, categories = categories, carts = carts)
                 }
             }
         }
-        getProduct()
-        getCategories()
 
     }
 
@@ -60,7 +62,7 @@ class MainActivity : ComponentActivity() {
                 p1: Response<List<ProductItem>?>
             ) {
                 val responseBody = p1.body()!!
-                products = responseBody
+                products.addAll( responseBody)
 
             }
 
@@ -151,7 +153,7 @@ class MainActivity : ComponentActivity() {
         })
     }
 
-    private fun addCarts(cartItem: CartItem,onResult: (CartItem?) -> Unit) {
+    private fun addCarts(cartItem: CartItem, onResult: (CartItem?) -> Unit) {
         val retrofitBuilder = Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
             .baseUrl(BASE_URL)
